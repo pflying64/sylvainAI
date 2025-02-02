@@ -3,9 +3,8 @@ from openai import OpenAI
 import time
 
 # Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["env"]["OPENAI_API_KEY"])
-
-ASSISTANT_ID = "asst_hXc1J6AmWynMBSpFLThNznEl"
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+ASSISTANT_ID = st.secrets["ASSISTANT_ID"]
 
 def get_assistant_response(thread, user_message, message_placeholder):
     """
