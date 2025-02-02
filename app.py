@@ -5,7 +5,7 @@ import time  # Aggiungiamo questo import
 
 
 # Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["openai"]["openai_api_key"])
+client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 ASSISTANT_ID = st.secrets["openai"]["assistant_id"]
 
 def get_assistant_response(thread, user_message, message_placeholder):
