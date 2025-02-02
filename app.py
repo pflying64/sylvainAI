@@ -1,5 +1,8 @@
 import streamlit as st
 from openai import OpenAI
+import time  # Aggiungiamo questo import
+
+
 
 # Initialize OpenAI client
 client = OpenAI()
