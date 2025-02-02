@@ -1,122 +1,177 @@
-
 import streamlit as st
 from openai import OpenAI
 import time
+import os
 
-# Initialize OpenAI client
-client = OpenAI()
+# Initialize OpenAI client with API key from environment variable
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+ASSISTANT_ID = "asst_hXc1J6AmWynMBSpFLThNznEl"
 
-# ANASAEA SEO SEARCH ENGINE Assistant ID
-ASSISTANT_ID = "asst_P5TO2T0CLrDSbsSspmNWLTw9"
+def get_assistant_response(thread, user_message, message_placeholder):
+    """
+    Get response from the assistant and display it in real-time
+    """
+    client.beta.threads.messages.create(
+        thread_id=thread.id,
+        role="user",
+        content=user_message
+    )
 
-def get_assistant_response(thread, user_message):
-   # Add the user message to the thread
-   client.beta.threads.messages.create(
-       thread_id=thread.id,
-       role="user",
-       content=user_message
-   )
+    stream = client.beta.threads.runs.create(
+        thread_id=thread.id,
+        assistant_id=ASSISTANT_ID,
+        stream=True
+    )
 
-   # Run the Assistant
-   run = client.beta.threads.runs.create(
-       thread_id=thread.id,
-       assistant_id=ASSISTANT_ID
-   )
+    current_text = ""
+    for event in stream:
+        if event.event == "thread.message.delta":
+            delta = event.data.delta.content[0].text.value
+            current_text += delta
+            message_placeholder.markdown(current_text)
 
-   # Wait for the completion
-   while run.status != "completed":
-       time.sleep(1)
-       run = client.beta.threads.runs.retrieve(
-           thread_id=thread.id,
-           run_id=run.id
-       )
-
-   # Get the assistant's messages
-   messages = client.beta.threads.messages.list(thread_id=thread.id)
-   
-   # Return the latest assistant message
-   for msg in messages:
-       if msg.role == "assistant":
-           return msg.content[0].text.value
-   
-   return "No response received"
+    return current_text
 
 def main():
-   st.set_page_config(
-       page_title="ANASAEA Art Search",
-       page_icon="🎨",
-       layout="wide"
-   )
+    # Page configuration with dark theme
+    st.set_page_config(
+        page_title="Sylvain DB",
+        page_icon="📚",
+        layout="centered"
+    )
 
-   st.title("🎨 ANASAEA Art Search Engine")
-   st.markdown("Explore our artists and their artworks through natural conversation")
-   
-   # Initialize thread in session state
-   if "thread" not in st.session_state:
-       st.session_state.thread = client.beta.threads.create()
-       st.session_state.messages = []
+    # Set background image
+    def add_bg_from_local(image_file):
+        import base64
+        
+        def get_base64_of_bin_file(bin_file):
+            with open(bin_file, 'rb') as f:
+                data = f.read()
+            return base64.b64encode(data).decode()
 
-   # Display chat history
-   for message in st.session_state.messages:
-       with st.chat_message(message["role"]):
-           st.markdown(message["content"])
+        bin_str = get_base64_of_bin_file(image_file)
+        
+        st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("data:image/jpg;base64,{bin_str}");
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }}
+            
+            /* Dark overlay for better readability */
+            .stApp::before {{
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(30, 30, 30, 0.85);
+                z-index: -1;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+    
+    # Add local background image
+    add_bg_from_local('background.jpg')
 
-   # Chat input
-   if prompt := st.chat_input("Search for artists, styles, prices, or ask how to use ANASAEA..."):
-       # Display user message
-       with st.chat_message("user"):
-           st.markdown(prompt)
-       st.session_state.messages.append({"role": "user", "content": prompt})
+    # Custom CSS for dark mode and elegant styling
+    st.markdown("""
+        <style>
+        /* Base styles */
+        .stApp {
+            color: #E0E0E0;
+        }
+        
+        /* Header styling */
+        .main-header {
+            font-family: 'Helvetica Neue', sans-serif;
+            color: #FFFFFF;
+            font-weight: 300;
+            margin-bottom: 2rem;
+        }
+        
+        /* Chat message container */
+        .stChatMessage {
+            background-color: #2D2D2D;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+        
+        /* Chat input styling */
+        .stChatInputContainer {
+            border-color: #404040;
+        }
+        
+        /* Sidebar styling */
+        .css-1d391kg {
+            background-color: #252526;
+        }
+        
+        /* Button styling */
+        .stButton>button {
+            background-color: #404040;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .stButton>button:hover {
+            background-color: #505050;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-       # Get and display assistant response
-       with st.chat_message("assistant"):
-           with st.spinner("Searching ANASAEA database..."):
-               response = get_assistant_response(st.session_state.thread, prompt)
-               st.markdown(response)
-               st.session_state.messages.append({"role": "assistant", "content": response})
+    # Main title with custom styling
+    st.markdown('<h1 class="main-header">Sylvain DB</h1>', unsafe_allow_html=True)
+    st.markdown(
+        "Explore the art world through the knowledge of renowned collector Sylvain Levy",
+        help="Ask questions about art collections, artists, exhibitions, and more"
+    )
 
-   # Sidebar with instructions and examples
-   with st.sidebar:
-       st.title("Help & Examples")
-       
-       # Usage Instructions Tab
-       st.markdown("### How to Use ANASAEA")
-       st.markdown("""
-       You can ask about:
-       - How to browse and purchase artworks
-       - How the platform works
-       - Instructions for artists and buyers
-       - Platform features and functionalities
-       
-       Example questions:
-       - "How do I purchase an artwork?"
-       - "How can artists join ANASAEA?"
-       - "What are the payment methods?"
-       - "How does the art authentication work?"
-       """)
-       
-       st.markdown("### Art Search Examples")
-       st.markdown("""
-       Search our collection by:
-       - Available artworks under specific prices
-       - Artists from specific countries
-       - Artworks in particular styles
-       - Details about specific artists
-       
-       Example queries:
-       - "Show me abstract paintings under $5000"
-       - "Tell me about French artists"
-       - "What artworks are currently available?"
-       - "Show me landscape paintings"
-       """)
-       
-       st.divider()
-       
-       # Reset button with confirmation
-       if st.button("Start New Search"):
-           st.session_state.thread = client.beta.threads.create()
-           st.session_state.messages = []
-           st.rerun()
+    # Initialize chat session
+    if "thread" not in st.session_state:
+        st.session_state.thread = client.beta.threads.create()
+        st.session_state.messages = []
+
+    # Display chat history
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Chat input
+    if prompt := st.chat_input("Ask about art collections, artists, exhibitions..."):
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            response = get_assistant_response(st.session_state.thread, prompt, message_placeholder)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+
+    # Minimal sidebar with essential information
+    with st.sidebar:
+        st.markdown("### About Sylvain DB")
+        st.markdown("""
+        This AI assistant embodies the knowledge and expertise of Sylvain Levy, 
+        offering insights into art collection, curation, and appreciation.
+        """)
+        
+        st.divider()
+        
+        if st.button("New Conversation", type="primary"):
+            st.session_state.thread = client.beta.threads.create()
+            st.session_state.messages = []
+            st.rerun()
 
 if __name__ == "__main__":
-   main()
+    main()
