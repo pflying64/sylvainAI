@@ -6,6 +6,17 @@ import time
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 ASSISTANT_ID = st.secrets["ASSISTANT_ID"]
 
+# Test the connection
+try:
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "Hello"}]
+    )
+    st.write("OpenAI connection successful")
+except Exception as e:
+    st.error(f"OpenAI connection error: {str(e)}")
+    
+
 def get_assistant_response(thread, user_message, message_placeholder):
     """
     Get response from the assistant and display it in real-time
