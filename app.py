@@ -1,21 +1,10 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 import time
 
-# Initialize OpenAI
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Initialize OpenAI client
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 ASSISTANT_ID = st.secrets["ASSISTANT_ID"]
-
-# Test the connection
-try:
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": "Hello"}]
-    )
-    st.write("OpenAI connection successful")
-except Exception as e:
-    st.error(f"OpenAI connection error: {str(e)}")
-    
 
 def get_assistant_response(thread, user_message, message_placeholder):
     """
@@ -23,44 +12,42 @@ def get_assistant_response(thread, user_message, message_placeholder):
     """
     try:
         # Create the message
-        openai.beta.threads.messages.create(
+        message = client.beta.threads.messages.create(
             thread_id=thread.id,
             role="user",
             content=user_message
         )
 
         # Create the run
-        run = openai.beta.threads.runs.create(
+        run = client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=ASSISTANT_ID
         )
 
-        # Wait for completion
+        # Poll for the run completion
         while True:
-            run_status = openai.beta.threads.runs.retrieve(
+            run = client.beta.threads.runs.retrieve(
                 thread_id=thread.id,
                 run_id=run.id
             )
-            
-            if run_status.status == 'completed':
+            if run.status == 'completed':
                 break
-            
-            time.sleep(1)
+            elif run.status == 'failed':
+                raise Exception("Run failed")
+            time.sleep(0.5)
 
-        # Get messages
-        messages = openai.beta.threads.messages.list(
+        # Get the latest message
+        messages = client.beta.threads.messages.list(
             thread_id=thread.id
         )
-
-        # Get the latest assistant message
-        for msg in messages.data:
-            if msg.role == "assistant":
-                message_placeholder.markdown(msg.content[0].text.value)
-                return msg.content[0].text.value
+        response = messages.data[0].content[0].text.value
+        message_placeholder.markdown(response)
+        return response
 
     except Exception as e:
-        st.error(f"Error: {str(e)}")
-        return "I apologize, but I encountered an error while processing your request."
+        error_msg = f"Error: {str(e)}"
+        message_placeholder.error(error_msg)
+        return error_msg
 
 def main():
     # Page configuration with dark theme
@@ -169,7 +156,7 @@ def main():
 
     # Initialize chat session
     if "thread" not in st.session_state:
-        st.session_state.thread = openai.beta.threads.create()
+        st.session_state.thread = client.beta.threads.create()
         st.session_state.messages = []
 
     # Display chat history
@@ -199,7 +186,7 @@ def main():
         st.divider()
         
         if st.button("New Conversation", type="primary"):
-            st.session_state.thread = openai.beta.threads.create()
+            st.session_state.thread = client.beta.threads.create()
             st.session_state.messages = []
             st.rerun()
 
