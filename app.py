@@ -1,10 +1,12 @@
 import streamlit as st
 from openai import OpenAI
-import time
+
+# Retrieve API key and Assistant ID from Streamlit secrets
+api_key = st.secrets["openai"]["api_key"]
+assistant_id = st.secrets["openai"]["assistant_id"]
 
 # Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-ASSISTANT_ID = st.secrets["ASSISTANT_ID"]
+client = OpenAI(api_key=api_key)
 
 def get_assistant_response(thread, user_message, message_placeholder):
     """
