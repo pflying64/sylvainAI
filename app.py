@@ -1,9 +1,11 @@
 import streamlit as st
 from openai import OpenAI
 import time
+import openai
 
 # Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+client = OpenAI()  # Initialize without arguments first
+client.api_key = st.secrets["OPENAI_API_KEY"]  # Set api_key after initialization
 ASSISTANT_ID = st.secrets["ASSISTANT_ID"]
 
 def get_assistant_response(thread, user_message, message_placeholder):
