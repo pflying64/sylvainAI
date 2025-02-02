@@ -3,13 +3,9 @@ from openai import OpenAI
 import time
 import os
 
-# Initialize OpenAI client with API key from environment variable
-# Initialize OpenAI client with API key from environment variable
-api_key = st.secrets.get("OPENAI_API_KEY", None)
-if api_key is None:
-    st.error("OpenAI API key not found!")
-    st.stop()
-client = OpenAI(api_key=api_key)
+# Initialize OpenAI client
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
 ASSISTANT_ID = "asst_hXc1J6AmWynMBSpFLThNznEl"
 
 def get_assistant_response(thread, user_message, message_placeholder):
