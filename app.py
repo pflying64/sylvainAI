@@ -4,7 +4,7 @@ import time
 import os
 
 # Initialize OpenAI client with API key from environment variable
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+client = OpenAI(api_key=st.secrets.OPENAI_API_KEY)
 ASSISTANT_ID = "asst_hXc1J6AmWynMBSpFLThNznEl"
 
 def get_assistant_response(thread, user_message, message_placeholder):
