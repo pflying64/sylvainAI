@@ -1,37 +1,55 @@
 import streamlit as st
-from openai import OpenAI
-import time
 import openai
+import time
 
-# Initialize OpenAI client
-client = OpenAI()  # Initialize without arguments first
-client.api_key = st.secrets["OPENAI_API_KEY"]  # Set api_key after initialization
+# Initialize OpenAI
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 ASSISTANT_ID = st.secrets["ASSISTANT_ID"]
 
 def get_assistant_response(thread, user_message, message_placeholder):
     """
     Get response from the assistant and display it in real-time
     """
-    client.beta.threads.messages.create(
-        thread_id=thread.id,
-        role="user",
-        content=user_message
-    )
+    try:
+        # Create the message
+        openai.beta.threads.messages.create(
+            thread_id=thread.id,
+            role="user",
+            content=user_message
+        )
 
-    stream = client.beta.threads.runs.create(
-        thread_id=thread.id,
-        assistant_id=ASSISTANT_ID,
-        stream=True
-    )
+        # Create the run
+        run = openai.beta.threads.runs.create(
+            thread_id=thread.id,
+            assistant_id=ASSISTANT_ID
+        )
 
-    current_text = ""
-    for event in stream:
-        if event.event == "thread.message.delta":
-            delta = event.data.delta.content[0].text.value
-            current_text += delta
-            message_placeholder.markdown(current_text)
+        # Wait for completion
+        while True:
+            run_status = openai.beta.threads.runs.retrieve(
+                thread_id=thread.id,
+                run_id=run.id
+            )
+            
+            if run_status.status == 'completed':
+                break
+            
+            time.sleep(1)
 
-    return current_text
+        # Get messages
+        messages = openai.beta.threads.messages.list(
+            thread_id=thread.id
+        )
+
+        # Get the latest assistant message
+        for msg in messages.data:
+            if msg.role == "assistant":
+                message_placeholder.markdown(msg.content[0].text.value)
+                return msg.content[0].text.value
+
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
+        return "I apologize, but I encountered an error while processing your request."
 
 def main():
     # Page configuration with dark theme
@@ -140,7 +158,7 @@ def main():
 
     # Initialize chat session
     if "thread" not in st.session_state:
-        st.session_state.thread = client.beta.threads.create()
+        st.session_state.thread = openai.beta.threads.create()
         st.session_state.messages = []
 
     # Display chat history
@@ -170,7 +188,7 @@ def main():
         st.divider()
         
         if st.button("New Conversation", type="primary"):
-            st.session_state.thread = client.beta.threads.create()
+            st.session_state.thread = openai.beta.threads.create()
             st.session_state.messages = []
             st.rerun()
 
