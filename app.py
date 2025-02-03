@@ -1,32 +1,23 @@
 import streamlit as st
 from openai import OpenAI
-import time  # Aggiungiamo questo import
+import time
 
-
-
-# Initialize OpenAI client
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 ASSISTANT_ID = st.secrets["openai"]["assistant_id"]
 
 def get_assistant_response(thread, user_message, message_placeholder):
-    """
-    Get response from the assistant and display it in real-time
-    """
     try:
-        # Create the message
         message = client.beta.threads.messages.create(
             thread_id=thread.id,
             role="user",
             content=user_message
         )
 
-        # Create the run
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=ASSISTANT_ID
         )
 
-        # Poll for the run completion
         while True:
             run = client.beta.threads.runs.retrieve(
                 thread_id=thread.id,
@@ -38,7 +29,6 @@ def get_assistant_response(thread, user_message, message_placeholder):
                 raise Exception("Run failed")
             time.sleep(0.5)
 
-        # Get the latest message
         messages = client.beta.threads.messages.list(
             thread_id=thread.id
         )
@@ -52,71 +42,35 @@ def get_assistant_response(thread, user_message, message_placeholder):
         return error_msg
 
 def main():
-    # Page configuration with dark theme
     st.set_page_config(
-        page_title="Sylvain DB",
-        page_icon="📚",
-        layout="centered"
+        page_title="SYLVAIN LEVY",
+        page_icon="🎨",
+        layout="wide"
     )
 
-    # Set background image
-    def add_bg_from_local(image_file):
-        import base64
-        
-        def get_base64_of_bin_file(bin_file):
-            with open(bin_file, 'rb') as f:
-                data = f.read()
-            return base64.b64encode(data).decode()
-
-        bin_str = get_base64_of_bin_file(image_file)
-        
-        st.markdown(
-            f"""
-            <style>
-            .stApp {{
-                background-image: url("data:image/jpg;base64,{bin_str}");
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                background-attachment: fixed;
-            }}
-            
-            /* Dark overlay for better readability */
-            .stApp::before {{
-                content: "";
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(30, 30, 30, 0.85);
-                z-index: -1;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-    
-    # Add local background image
-    add_bg_from_local('background.jpg')
-
-    # Custom CSS for dark mode and elegant styling
     st.markdown("""
         <style>
-        /* Base styles */
+        .main-title {
+            font-family: 'Helvetica Neue', sans-serif;
+            font-size: 2.5em;
+            color: #FFFFFF;
+            text-align: center;
+            margin-bottom: 0;
+            font-weight: 300;
+        }
+        .subtitle {
+            font-family: 'Helvetica Neue', sans-serif;
+            font-size: 1.5em;
+            color: #E0E0E0;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
         .stApp {
             color: #E0E0E0;
         }
         
-        /* Header styling */
-        .main-header {
-            font-family: 'Helvetica Neue', sans-serif;
-            color: #FFFFFF;
-            font-weight: 300;
-            margin-bottom: 2rem;
-        }
-        
-        /* Chat message container */
         .stChatMessage {
             background-color: #2D2D2D;
             border-radius: 10px;
@@ -124,17 +78,16 @@ def main():
             margin: 0.5rem 0;
         }
         
-        /* Chat input styling */
         .stChatInputContainer {
             border-color: #404040;
+            max-width: 80% !important;
+            margin: auto;
         }
         
-        /* Sidebar styling */
         .css-1d391kg {
             background-color: #252526;
         }
         
-        /* Button styling */
         .stButton>button {
             background-color: #404040;
             color: #FFFFFF;
@@ -146,28 +99,75 @@ def main():
         .stButton>button:hover {
             background-color: #505050;
         }
+
+        /* User icon */
+        .stChatMessage.user [data-testid="StChatMessageAvatar"] div {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%23E0E0E0' stroke-width='2'/%3E%3Cpath d='M 30 50 Q 50 20, 70 50' fill='none' stroke='%23E0E0E0' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+            background-size: contain !important;
+        }
+
+        /* Assistant icon */
+        .stChatMessage.assistant [data-testid="StChatMessageAvatar"] div {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='65' fill='%23E0E0E0' font-family='Didot, serif' font-size='70' font-style='italic' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E") !important;
+            background-size: contain !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 
-    # Main title with custom styling
-    st.markdown('<h1 class="main-header">Sylvain DB</h1>', unsafe_allow_html=True)
+    def add_bg_from_local(image_file):
+        import base64
+        import os
+        
+        if os.path.exists(image_file):
+            with open(image_file, 'rb') as f:
+                data = f.read()
+                b64 = base64.b64encode(data).decode()
+                
+                st.markdown(
+                    f"""
+                    <style>
+                    .stApp {{
+                        background-image: url("data:image/jpg;base64,{b64}");
+                        background-size: cover;
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-attachment: fixed;
+                    }}
+                    
+                    .stApp::before {{
+                        content: "";
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(30, 30, 30, 0.85);
+                        z-index: -1;
+                    }}
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
+    
+    add_bg_from_local('background.jpg')
+
+    st.markdown('<h1 class="main-title">SYLVAIN LEVY</h1>', unsafe_allow_html=True)
+    st.markdown('<h2 class="subtitle">Art and Technologies</h2>', unsafe_allow_html=True)
+
     st.markdown(
-        "Explore the art world through the knowledge of renowned collector Sylvain Levy",
-        help="Ask questions about art collections, artists, exhibitions, and more"
+        "Hello, I'm Karen, Sylvain's daughter. Ask me anything about his pioneering work in art collection and digital technologies...",
+        help="Ask about art collections, exhibitions, digital initiatives, and more"
     )
 
-    # Initialize chat session
     if "thread" not in st.session_state:
         st.session_state.thread = client.beta.threads.create()
         st.session_state.messages = []
 
-    # Display chat history
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # Chat input
-    if prompt := st.chat_input("Ask about art collections, artists, exhibitions..."):
+    if prompt := st.chat_input("Ask about Sylvain's work in art and technology..."):
         with st.chat_message("user"):
             st.markdown(prompt)
         st.session_state.messages.append({"role": "user", "content": prompt})
@@ -177,12 +177,11 @@ def main():
             response = get_assistant_response(st.session_state.thread, prompt, message_placeholder)
             st.session_state.messages.append({"role": "assistant", "content": response})
 
-    # Minimal sidebar with essential information
     with st.sidebar:
-        st.markdown("### About Sylvain DB")
+        st.markdown("### About Sylvain Levy")
         st.markdown("""
-        This AI assistant embodies the knowledge and expertise of Sylvain Levy, 
-        offering insights into art collection, curation, and appreciation.
+        Explore the intersection of art and technology through the lens of 
+        Sylvain Levy's innovative approach to art collection and curation.
         """)
         
         st.divider()
