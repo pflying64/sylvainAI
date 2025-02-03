@@ -71,7 +71,7 @@ def main():
             font-family: 'Helvetica Neue', sans-serif;
             color: #808080;
             text-align: center;
-            font-size: 0.9em;
+            font-size: 1.1em;
             margin-top: -1rem;
             margin-bottom: 2rem;
         }
@@ -111,9 +111,11 @@ def main():
 
         /* User icon */
         .stChatMessage.user [data-testid="StChatMessageAvatar"] div {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%23E0E0E0' stroke-width='2'/%3E%3Cpath d='M 30 50 Q 50 20, 70 50' fill='none' stroke='%23E0E0E0' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='65' fill='%23E0E0E0' font-family='Didot, serif' font-size='70' font-style='italic' text-anchor='middle'%3EU%3C/text%3E%3C/svg%3E") !important;
             background-size: contain !important;
             background-color: transparent !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
         }
 
         /* Assistant icon */
@@ -121,6 +123,8 @@ def main():
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='65' fill='%23E0E0E0' font-family='Didot, serif' font-size='70' font-style='italic' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E") !important;
             background-size: contain !important;
             background-color: transparent !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
         }
 
         /* Hide Streamlit branding */
@@ -169,7 +173,7 @@ def main():
 
     st.markdown('<h1 class="main-title">SYLVAIN LEVY</h1>', unsafe_allow_html=True)
     st.markdown('<h2 class="subtitle">Art and Technologies</h2>', unsafe_allow_html=True)
-    st.markdown('<p class="version">α 0.1</p>', unsafe_allow_html=True)
+    st.markdown('<p class="version">v α 0.1</p>', unsafe_allow_html=True)
 
     st.markdown(
         "Hello, I'm Karen, Sylvain's daughter. Ask me anything about his pioneering work in art collection and digital technologies..."
