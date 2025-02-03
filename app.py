@@ -45,7 +45,8 @@ def main():
     st.set_page_config(
         page_title="SYLVAIN LEVY",
         page_icon="🎨",
-        layout="wide"
+        layout="wide",
+        initial_sidebar_state="collapsed"
     )
 
     st.markdown("""
@@ -65,6 +66,14 @@ def main():
             text-align: center;
             margin-bottom: 2rem;
             font-weight: 300;
+        }
+        .version {
+            font-family: 'Helvetica Neue', sans-serif;
+            color: #808080;
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: -1rem;
+            margin-bottom: 2rem;
         }
         
         .stApp {
@@ -104,13 +113,20 @@ def main():
         .stChatMessage.user [data-testid="StChatMessageAvatar"] div {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%23E0E0E0' stroke-width='2'/%3E%3Cpath d='M 30 50 Q 50 20, 70 50' fill='none' stroke='%23E0E0E0' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") !important;
             background-size: contain !important;
+            background-color: transparent !important;
         }
 
         /* Assistant icon */
         .stChatMessage.assistant [data-testid="StChatMessageAvatar"] div {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='65' fill='%23E0E0E0' font-family='Didot, serif' font-size='70' font-style='italic' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E") !important;
             background-size: contain !important;
+            background-color: transparent !important;
         }
+
+        /* Hide Streamlit branding */
+        #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
         </style>
     """, unsafe_allow_html=True)
 
@@ -153,10 +169,10 @@ def main():
 
     st.markdown('<h1 class="main-title">SYLVAIN LEVY</h1>', unsafe_allow_html=True)
     st.markdown('<h2 class="subtitle">Art and Technologies</h2>', unsafe_allow_html=True)
+    st.markdown('<p class="version">α 0.1</p>', unsafe_allow_html=True)
 
     st.markdown(
-        "Hello, I'm Karen, Sylvain's daughter. Ask me anything about his pioneering work in art collection and digital technologies...",
-        help="Ask about art collections, exhibitions, digital initiatives, and more"
+        "Hello, I'm Karen, Sylvain's daughter. Ask me anything about his pioneering work in art collection and digital technologies..."
     )
 
     if "thread" not in st.session_state:
@@ -176,20 +192,6 @@ def main():
             message_placeholder = st.empty()
             response = get_assistant_response(st.session_state.thread, prompt, message_placeholder)
             st.session_state.messages.append({"role": "assistant", "content": response})
-
-    with st.sidebar:
-        st.markdown("### About Sylvain Levy")
-        st.markdown("""
-        Explore the intersection of art and technology through the lens of 
-        Sylvain Levy's innovative approach to art collection and curation.
-        """)
-        
-        st.divider()
-        
-        if st.button("New Conversation", type="primary"):
-            st.session_state.thread = client.beta.threads.create()
-            st.session_state.messages = []
-            st.rerun()
 
 if __name__ == "__main__":
     main()
