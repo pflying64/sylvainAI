@@ -110,18 +110,23 @@ def main():
         }
 
         /* Rimuovi avatar di default */
-        [data-testid="StChatMessageAvatar"] img {
+        [data-testid="StChatMessageAvatar"] {
             display: none !important;
         }
 
-        /* Stile per gli avatar personalizzati */
-        [data-testid="StChatMessageAvatar"] {
-            background-color: transparent !important;
-            border-radius: 0 !important;
+        /* Centra solo il testo introduttivo */
+        div.stMarkdown:first-of-type p {
+            text-align: center;
+        }
+
+        /* Ripristina allineamento per i messaggi chat */
+        .stChatMessage .stMarkdown p {
+            text-align: left;
         }
 
         /* User icon */
         .stChatMessage.user [data-testid="StChatMessageAvatar"] div {
+            display: block !important;
             background-color: transparent !important;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='65' fill='%23E0E0E0' font-family='Didot, serif' font-size='70' font-style='italic' text-anchor='middle'%3EU%3C/text%3E%3C/svg%3E") !important;
             background-size: contain !important;
@@ -131,26 +136,12 @@ def main():
 
         /* Assistant icon */
         .stChatMessage.assistant [data-testid="StChatMessageAvatar"] div {
+            display: block !important;
             background-color: transparent !important;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='65' fill='%23E0E0E0' font-family='Didot, serif' font-size='70' font-style='italic' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E") !important;
             background-size: contain !important;
             background-repeat: no-repeat !important;
             background-position: center !important;
-        }
-
-        /* Rimuovi completamente gli avatar di default */
-        [data-testid="StChatMessageAvatar"] {
-            display: none !important;
-        }
-
-        /* Centra solo il testo introduttivo */
-        div.stMarkdown:first-of-type p {
-        text-align: center;
-        }
-
-        /* Ripristina allineamento per i messaggi chat */
-        .stChatMessage .stMarkdown p {
-        text-align: left;
         }
 
         /* Hide Streamlit branding */
