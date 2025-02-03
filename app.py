@@ -109,6 +109,17 @@ def main():
             background-color: #505050;
         }
 
+        /* Rimuovi avatar di default */
+        [data-testid="StChatMessageAvatar"] img {
+            display: none !important;
+        }
+
+        /* Stile per gli avatar personalizzati */
+        [data-testid="StChatMessageAvatar"] {
+            background-color: transparent !important;
+            border-radius: 0 !important;
+        }
+
         /* User icon */
         .stChatMessage.user [data-testid="StChatMessageAvatar"] div {
             background-color: transparent !important;
@@ -125,6 +136,11 @@ def main():
             background-size: contain !important;
             background-repeat: no-repeat !important;
             background-position: center !important;
+        }
+
+        /* Center all markdown text */
+        .stMarkdown {
+            text-align: center;
         }
 
         /* Hide Streamlit branding */
@@ -173,7 +189,7 @@ def main():
 
     st.markdown('<h1 class="main-title">SYLVAIN LEVY</h1>', unsafe_allow_html=True)
     st.markdown('<h2 class="subtitle">Art and Technologies</h2>', unsafe_allow_html=True)
-    st.markdown('<p class="version">α V 0.1</p>', unsafe_allow_html=True)
+    st.markdown('<p class="version">V α 0.1</p>', unsafe_allow_html=True)
 
     st.markdown(
         "Hello, I'm Karen, Sylvain's daughter. Ask me anything about his pioneering work in art collection and digital technologies..."
