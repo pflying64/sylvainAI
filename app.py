@@ -138,9 +138,19 @@ def main():
             background-position: center !important;
         }
 
-        /* Center all markdown text */
-        .stMarkdown {
-            text-align: center;
+        /* Rimuovi completamente gli avatar di default */
+        [data-testid="StChatMessageAvatar"] {
+            display: none !important;
+        }
+
+        /* Centra solo il testo introduttivo */
+        div.stMarkdown:first-of-type p {
+        text-align: center;
+        }
+
+        /* Ripristina allineamento per i messaggi chat */
+        .stChatMessage .stMarkdown p {
+        text-align: left;
         }
 
         /* Hide Streamlit branding */
