@@ -109,19 +109,19 @@ def main():
             background-color: #505050;
         }
 
-        /* Rimuovi avatar di default */
-        [data-testid="StChatMessageAvatar"] {
-            display: none !important;
-        }
-
-        /* Centra solo il testo introduttivo */
+        /* Centra solo il messaggio iniziale */
         div.stMarkdown:first-of-type p {
             text-align: center;
         }
 
-        /* Ripristina allineamento per i messaggi chat */
-        .stChatMessage .stMarkdown p {
-            text-align: left;
+        /* Allinea a sinistra tutti i messaggi della chat */
+        div.stChatMessage div.stMarkdown p {
+            text-align: left !important;
+        }
+
+        /* Rimuovi avatar di default */
+        [data-testid="StChatMessageAvatar"] {
+            display: none !important;
         }
 
         /* User icon */
