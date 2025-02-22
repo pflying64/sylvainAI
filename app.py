@@ -212,7 +212,7 @@ def main():
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    if prompt := st.chat_input("Ask about Sylvain's work in art and technology..."):
+    if prompt := st.chat_input("Ask me..."):
         with st.chat_message("user"):
             st.markdown(prompt)
         st.session_state.messages.append({"role": "user", "content": prompt})
