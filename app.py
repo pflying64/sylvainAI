@@ -77,7 +77,15 @@ def main():
         }
         
         .stApp {
-            color: #E0E0E0;
+            color: #FFFFFF;
+        }
+        
+        .stMarkdown p {
+            color: #FFFFFF !important;
+        }
+        
+        .stChatMessage div {
+            color: #FFFFFF !important;
         }
         
         .stChatMessage {
