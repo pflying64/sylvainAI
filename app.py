@@ -13,9 +13,11 @@ def get_assistant_response(thread, user_message, message_placeholder):
             content=user_message
         )
 
+        # Detect language and force same language response
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
-            assistant_id=ASSISTANT_ID
+            assistant_id=ASSISTANT_ID,
+            instructions={"additional_instructions": f"Respond in the same language as: {user_message}"}
         )
 
         while True:
